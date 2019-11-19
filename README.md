@@ -1,4 +1,4 @@
-# kalaha-book-vue
+# Простейщий фронтенд для кала-ха.рф API на VueJS.
 
 ## Project setup
 ```
