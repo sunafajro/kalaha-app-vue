@@ -17,10 +17,10 @@
             :key="'part-' + partNum"
             v-for="partNum in Object.keys(book.parts)"
           >
-            <p>{{ book.parts[partNum].title }}</p>
+            <p style="margin: 0.5rem 0">{{ book.parts[partNum].title }}</p>
             <button
               :class="
-                'side-menu-chapter-button btn btn-' +
+                'side-menu-chapter-button btn btn-sm btn-' +
                   (num == selectedChapter ? 'primary' : 'default')
               "
               @click="selectChapter(num)"
@@ -34,7 +34,7 @@
         <div v-if="!book.parts">
           <button
             :class="
-              'side-menu-chapter-button btn btn-' +
+              'side-menu-chapter-button btn btn-sm btn-' +
                 (num == selectedChapter ? 'primary' : 'default')
             "
             @click="selectChapter(num)"
@@ -129,6 +129,6 @@ export default {
 
 <style>
 .side-menu-chapter-button {
-  margin: 5px;
+  margin: 0.5rem;
 }
 </style>
