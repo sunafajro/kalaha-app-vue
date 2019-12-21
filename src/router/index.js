@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Home from '../views/Home.vue';
+import Books from '../views/Books.vue';
 import Book from '../views/Book.vue';
 
 Vue.use(VueRouter);
@@ -8,17 +8,18 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    redirect: '/home',
-  },
-  {
-    path: '/home',
-    name: 'home',
-    component: Home,
+    redirect: '/books',
   },
   {
     path: '/book/:id',
     name: 'book',
     component: Book,
+    props: true,
+  },
+  {
+    path: '/books',
+    name: 'books',
+    component: Books,
   },
 ];
 

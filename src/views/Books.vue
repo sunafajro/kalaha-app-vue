@@ -3,36 +3,36 @@
     <div
       class="col-xs-12 col-sm-12 col-md-6 col-lg-3 text-center"
       style="margin-bottom: 1rem"
-      :key="'book-' + num"
-      v-for="num in Object.keys(books)"
+      :key="'book-' + book.id"
+      v-for="book in books"
     >
-      <router-link :to="{ name: 'book', params: { id: num } }">
-        <img
-          class="img-responsive"
-          :src="prepareUrl(books[num])"
-          :alt="books[num].title"
-        />
+      <router-link :to="{ name: 'book', params: { id: book.id } }">
+        <img class="img-responsive" :src="prepareUrl(book)" :alt="book.title" />
       </router-link>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import { prepareFileUrl } from '../helpers';
 
 export default {
   computed: {
     ...mapState({
       books(state) {
-        return state.main.books;
+        return state.books.items;
       },
       contentUrl(state) {
-        return state.contentUrl;
+        return state.baseUrl + state.contentUrl;
       },
     }),
   },
+  async created() {
+    await this.getBooks();
+  },
   methods: {
+    ...mapActions(['getBooks']),
     prepareUrl(book) {
       return prepareFileUrl({
         id: book.id,

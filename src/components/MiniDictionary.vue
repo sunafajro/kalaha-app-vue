@@ -62,7 +62,7 @@ export default {
   computed: {
     ...mapState({
       terms(state) {
-        return state.dict.terms;
+        return state.dictionary.terms;
       },
       symbols(state) {
         return state.symbols;
@@ -70,7 +70,7 @@ export default {
     }),
     term: {
       get() {
-        return this.$store.state.dict.term;
+        return this.$store.state.dictionary.term;
       },
       set(value) {
         this.$store.commit('updateTerm', value);

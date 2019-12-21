@@ -5,14 +5,5 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
-export default {
-  async created() {
-    await this.getAppData();
-  },
-  methods: {
-    ...mapActions(['getAppData']),
-  },
-};
+export default {};
 </script>

@@ -9,33 +9,45 @@ const el = document.getElementById('app');
 
 export default new Vuex.Store({
   state: {
-    contentUrl: '',
-    searchUrl: '',
+    baseUrl: el.dataset.baseUrl,
+    contentUrl: el.dataset.contentUrl,
     symbols: [],
   },
-  mutations: {
-    updateAppData(state, data) {
-      state.contentUrl = data.contentUrl;
-      state.searchUrl = data.searchUrl;
-      state.symbols = data.symbols;
-    },
-  },
+  mutations: {},
   modules: {
-    main: {
+    books: {
       state: {
-        books: {},
+        booksUrl: el.dataset.booksUrl,
+        item: {},
+        items: [],
       },
       mutations: {
-        updateBooksData(state, data) {
-          state.books = data.books;
+        updateBook(state, data) {
+          state.item = data;
+        },
+        updateBooks(state, data) {
+          state.items = data;
         },
       },
       actions: {
-        async getAppData({ commit }) {
+        async getBook({ commit, rootState, state }, { id }) {
           try {
-            const { data } = await axios.get(el.dataset.appUrl);
-            commit('updateAppData', data);
-            commit('updateBooksData', data);
+            const { data } = await axios.get(
+              rootState.baseUrl + state.booksUrl + '/' + id
+            );
+            commit('updateBook', data);
+          } catch (e) {
+            throw new Error(
+              'Произошла ошибка: ' + (e && e.message ? ' ' + e.message : '')
+            );
+          }
+        },
+        async getBooks({ commit, rootState, state }) {
+          try {
+            const { data } = await axios.get(
+              rootState.baseUrl + state.booksUrl
+            );
+            commit('updateBooks', data);
           } catch (e) {
             throw new Error(
               'Произошла ошибка: ' + (e && e.message ? ' ' + e.message : '')
@@ -44,8 +56,9 @@ export default new Vuex.Store({
         },
       },
     },
-    dict: {
+    dictionary: {
       state: {
+        dictionaryUrl: el.dataset.dictsUrl,
         limit: 5,
         offset: 0,
         term: '',
@@ -68,7 +81,7 @@ export default new Vuex.Store({
                   term: state.term,
                   limit: state.limit,
                   offset: state.offset,
-                  baseUrl: rootState.searchUrl,
+                  baseUrl: rootState.baseUrl + state.dictionaryUrl,
                 })
               );
               commit('updateDictData', data);
