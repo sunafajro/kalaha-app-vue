@@ -16,42 +16,75 @@
           <MiniDictionary />
           <b>Вӗреневсем:</b>
           <div v-if="Array.isArray(book.parts) && book.parts.length">
-            <div
-              :key="'part-' + partNum"
-              v-for="partNum in Object.keys(book.parts)"
-            >
-              <p style="margin: 0.5rem 0">{{ book.parts[partNum].title }}</p>
-              <button
+            <div :key="'part-' + part.id" v-for="(part, idx) in book.parts">
+              <p style="margin: 0.5rem 0">{{ book.parts[idx].title }}</p>
+              <router-link
                 :class="
                   'side-menu-chapter-button btn btn-sm btn-' +
-                    (num == selectedChapter ? 'primary' : 'default')
+                    (num == chapterId ? 'primary' : 'default')
                 "
-                @click="selectChapter(num)"
+                :to="{
+                  name: 'book',
+                  params: { bookId: String(book.id), chapterId: String(num) },
+                }"
                 :key="'chapter-' + num"
-                v-for="num in book.parts[partNum].chapters"
+                v-for="num in book.parts[idx].chapters"
               >
                 {{ num | formatNum }}
-              </button>
+              </router-link>
             </div>
           </div>
           <div v-if="Array.isArray(book.parts) && !book.parts.length">
-            <button
+            <router-link
               :class="
                 'side-menu-chapter-button btn btn-sm btn-' +
-                  (chapter.id == selectedChapter ? 'primary' : 'default')
+                  (chapter.id == chapterId ? 'primary' : 'default')
               "
-              @click="selectChapter(chapter.id)"
+              :to="{
+                name: 'book',
+                params: {
+                  bookId: String(book.id),
+                  chapterId: String(chapter.id),
+                },
+              }"
               :key="'chapter-' + chapter.id"
               v-for="chapter in book.chapters"
             >
               {{ chapter.id | formatNum }}
-            </button>
+            </router-link>
           </div>
         </div>
         <div class="col-xs-12 col-sm-10">
-          <div v-if="chapter && chapter.audios">
-            <p><b>Итлемелли материалсем:</b></p>
-            <AudioPlayer :fileUrl="prepareUrl(book, chapter.audios[0])" />
+          <div class="row">
+            <div
+              class="col-xs-12 col-sm-12 col-md-6 col-lg-6"
+              v-if="
+                chapter && Array.isArray(chapter.audios) && chapter.audios[1]
+              "
+            >
+              <p><b>Юрӑ:</b></p>
+              <AudioPlayer :fileUrl="prepareUrl(book, chapter.audios[1])" />
+              <div v-if="chapter.audios[1].text">
+                <b><a href="#" @click.prevent="toggleSongText">Юрӑ сӑмахӗсем:</a></b>
+                <div class="row" v-if="showSongText">
+                  <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <div :key="'song-text-cv' + idx" v-for="(str, idx) in chapter.audios[1].text.cv">{{ str }}</div>
+                  </div>
+                  <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                    <div :key="'song-text-cv' + idx" v-for="(str, idx) in chapter.audios[1].text.ru">{{ str }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="col-xs-12 col-sm-12 col-md-6 col-lg-6"
+              v-if="
+                chapter && Array.isArray(chapter.audios) && chapter.audios[0]
+              "
+            >
+              <p><b>Итлемелли материалсем:</b></p>
+              <AudioPlayer :fileUrl="prepareUrl(book, chapter.audios[0])" />
+            </div>
           </div>
           <div v-if="chapter && chapter.pages">
             <p><b>Вуламалли материалсем:</b></p>
@@ -99,16 +132,21 @@ export default {
       },
     }),
     chapter() {
-      return this.book.hasOwnProperty('chapters') && Array.isArray(this.book.chapters) ? this.book.chapters.find(chapter => chapter.id === this.selectedChapter) : null;
+      return this.book &&
+        this.book.hasOwnProperty('chapters') &&
+        Array.isArray(this.book.chapters)
+        ? this.book.chapters.find(
+            chapter => String(chapter.id) === this.chapterId
+          )
+        : null;
     },
   },
   async created() {
-    await this.getBook({ id: this.id });
+    await this.getBook({ id: this.bookId });
   },
   data() {
     return {
-      selectedChapter: 1,
-      selectedPart: 1,
+      showSongText: false,
     };
   },
   filters: {
@@ -120,17 +158,21 @@ export default {
     ...mapActions(['getBook']),
     prepareUrl(book, file) {
       return prepareFileUrl({
-        id: this.id,
+        id: this.bookId,
         file,
         baseUrl: this.contentUrl,
       });
     },
-    selectChapter(num) {
-      this.selectedChapter = num;
+    toggleSongText() {
+      this.showSongText = !this.showSongText;
     },
   },
   props: {
-    id: {
+    bookId: {
+      type: String,
+      required: true,
+    },
+    chapterId: {
       type: String,
       required: true,
     },

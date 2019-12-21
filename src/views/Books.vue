@@ -6,7 +6,12 @@
       :key="'book-' + book.id"
       v-for="book in books"
     >
-      <router-link :to="{ name: 'book', params: { id: book.id } }">
+      <router-link
+        :to="{
+          name: 'book',
+          params: { bookId: String(book.id), chapterId: '1' },
+        }"
+      >
         <img class="img-responsive" :src="prepareUrl(book)" :alt="book.title" />
       </router-link>
     </div>
